@@ -50,10 +50,16 @@
         background: #45a049;
     }
 
+    button:disabled {
+        background: #a5d6a7;
+        cursor: not-allowed;
+    }
+
     .resultado {
         margin-top: 15px;
         font-weight: bold;
         text-align: center;
+        font-size: 18px;
     }
 </style>
 </head>
@@ -74,7 +80,7 @@
         <option value="com">Com repetição</option>
     </select>
 
-    <button onclick="sortear()">Sortear</button>
+    <button id="sortearBtn" onclick="iniciarContagem()">Sortear</button>
 
     <div class="resultado" id="resultado"></div>
 </div>
@@ -90,14 +96,35 @@
 ===================================================== */
 const NUMEROS_AUTORIZADOS = ["52", "155", "266", "5", "13", "3", "16", "17", "47", "80", "55"];
 
-function sortear() {
+// Função chamada ao clicar em "Sortear"
+function iniciarContagem() {
+    const resultadoEl = document.getElementById("resultado");
+    const btn = document.getElementById("sortearBtn");
 
-    // 🔊 Tocar música após clique (evita bloqueio)
-    let musica = document.getElementById("musica");
-    if (musica.paused) {
-        musica.play();
-    }
+    // Desativa botão durante a contagem
+    btn.disabled = true;
 
+    // Tocar música (se pausada)
+    const musica = document.getElementById("musica");
+    if (musica.paused) musica.play();
+
+    let contagem = 5;
+    resultadoEl.innerText = `Sorteando em: ${contagem}`;
+
+    const interval = setInterval(() => {
+        contagem--;
+        if (contagem > 0) {
+            resultadoEl.innerText = `Sorteando em: ${contagem}`;
+        } else {
+            clearInterval(interval);
+            sorteioFinal();
+            btn.disabled = false; // reativa botão
+        }
+    }, 1000);
+}
+
+// Função que realiza o sorteio de fato
+function sorteioFinal() {
     let todos = document
         .getElementById("todosNumeros")
         .value
