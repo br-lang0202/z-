@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Sorteio</title>
+<title>Sorteio com Contagem Animada</title>
 
 <style>
     body {
@@ -12,6 +12,8 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
+        position: relative;
+        overflow: hidden;
     }
 
     .container {
@@ -20,6 +22,7 @@
         border-radius: 10px;
         width: 380px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        z-index: 1;
     }
 
     h2 {
@@ -61,6 +64,27 @@
         text-align: center;
         font-size: 18px;
     }
+
+    /* 🎈 Balão da contagem */
+    #contagemBalão {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120px;
+        height: 120px;
+        background: #ff5722;
+        color: white;
+        font-size: 50px;
+        font-weight: bold;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        display: none; /* Inicialmente invisível */
+    }
 </style>
 </head>
 <body>
@@ -90,40 +114,47 @@
     <source src="musica.mp3" type="audio/mpeg">
 </audio>
 
+<!-- 🎈 Balão de contagem -->
+<div id="contagemBalão">5</div>
+
 <script>
 /* =====================================================
    🔐 NÚMEROS AUTORIZADOS (EDITA SÓ AQUI)
 ===================================================== */
-const NUMEROS_AUTORIZADOS = ["52", "155", "266", "5", "13", "3", "16", "17", "47", "80", "55"];
+const NUMEROS_AUTORIZADOS = ["52", "155", "266"];
 
-// Função chamada ao clicar em "Sortear"
 function iniciarContagem() {
-    const resultadoEl = document.getElementById("resultado");
+    const balao = document.getElementById("contagemBalão");
     const btn = document.getElementById("sortearBtn");
+    const resultadoEl = document.getElementById("resultado");
 
-    // Desativa botão durante a contagem
     btn.disabled = true;
+    resultadoEl.innerText = "";
+
+    // Mostrar balão
+    balao.style.display = "flex";
 
     // Tocar música (se pausada)
     const musica = document.getElementById("musica");
     if (musica.paused) musica.play();
 
     let contagem = 5;
-    resultadoEl.innerText = `Sorteando em: ${contagem}`;
+    balao.innerText = contagem;
 
     const interval = setInterval(() => {
         contagem--;
         if (contagem > 0) {
-            resultadoEl.innerText = `Sorteando em: ${contagem}`;
+            balao.innerText = contagem;
         } else {
             clearInterval(interval);
+            balao.style.display = "none"; // esconder balão
             sorteioFinal();
-            btn.disabled = false; // reativa botão
+            btn.disabled = false;
         }
     }, 1000);
 }
 
-// Função que realiza o sorteio de fato
+// Função que realiza o sorteio
 function sorteioFinal() {
     let todos = document
         .getElementById("todosNumeros")
